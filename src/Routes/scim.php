@@ -5,11 +5,12 @@ use RobTrehy\LaravelAzureProvisioning\Controllers\ResourceTypeController;
 use RobTrehy\LaravelAzureProvisioning\Controllers\SchemaController;
 use RobTrehy\LaravelAzureProvisioning\Controllers\ServiceProviderController;
 use Illuminate\Routing\Middleware\SubstituteBindings;
+use RobTrehy\LaravelAzureProvisioning\Middleware\CheckProvisioningToken;
 use Illuminate\Support\Facades\Route;
 
 Route::group([
-        'prefix' => config('azureprovisioning.routePrefix'),
-        'middleware' => [SubstituteBindings::class]
+    'prefix' => config('azureprovisioning.routePrefix'),
+    'middleware' => [SubstituteBindings::class, CheckProvisioningToken::class]
     ], function () {
         Route::get('/ServiceProviderConfig', [ServiceProviderController::class, 'index']);
         Route::get('/Schemas', [SchemaController::class, 'index']);

@@ -9,6 +9,8 @@ return [
      */
     'routePrefix' => 'scim/v2.0',
 
+    'enableTokenMiddleware' => false,
+
     /**
      * User Resource Type settings
      */
