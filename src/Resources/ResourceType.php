@@ -5,6 +5,7 @@ namespace RobTrehy\LaravelAzureProvisioning\Resources;
 use Illuminate\Database\Eloquent\Model;
 use RobTrehy\LaravelAzureProvisioning\Exceptions\AzureProvisioningException;
 use RobTrehy\LaravelAzureProvisioning\Utils\AzureHelper;
+use Illuminate\Support\Facades\Log;
 
 class ResourceType
 {
