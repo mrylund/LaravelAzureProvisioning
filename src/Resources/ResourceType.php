@@ -52,6 +52,8 @@ class ResourceType
     {
         $mapping = $this->getMapping();
         $attribute = strtolower($attribute);
+        Log::debug($attribute . " -> " . is_array($attribute));
+        Log::debug($mapping);
 
         if (array_key_exists($attribute, $mapping)) {
             return $mapping[$attribute];
@@ -103,12 +105,12 @@ class ResourceType
     {
         if (!is_array($this->getSchema())) {
             if (strpos($scimAttribute, $this->getSchema()) !== false) {
-                return str_replace($this->getSchema().':', '', $scimAttribute);
+                return str_replace($this->getSchema() . ':', '', $scimAttribute);
             }
         } else {
             foreach ($this->getSchema() as $schema) {
                 if (strpos($scimAttribute, $schema) !== false) {
-                    return str_replace($schema.':', '', $scimAttribute);
+                    return str_replace($schema . ':', '', $scimAttribute);
                 }
             }
         }
