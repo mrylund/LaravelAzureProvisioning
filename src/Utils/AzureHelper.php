@@ -95,8 +95,8 @@ class AzureHelper
     public static function objectLocation(Model $object, ResourceType $resourceType = null)
     {
         return (substr(config('app.url'), -1) <> '/' ?
-            config('app.url').'/'.config('azureprovisioning.routePrefix').'/'.$resourceType->getName().'/'.$object->id :
-            config('app.url').config('azureprovisioning.routePrefix').'/'.$resourceType->getName().'/'.$object->id);
+            config('app.url') . '/' . config('azureprovisioning.routePrefix') . '/' . $resourceType->getName() . '/' . $object->id :
+            config('app.url') . config('azureprovisioning.routePrefix') . '/' . $resourceType->getName() . '/' . $object->id);
     }
 
     public static function objectToSCIMArray(
@@ -121,7 +121,8 @@ class AzureHelper
 
         if ($resourceType <> null) {
             if ((count($attributes) === 0 || self::inArrayi('schemas', $attributes)) &&
-                (count($excludedAttributes) === 0 || !self::inArrayi('schemas', $excludedAttributes))) {
+                (count($excludedAttributes) === 0 || !self::inArrayi('schemas', $excludedAttributes))
+            ) {
                 $result['schemas'] = is_array($resourceType->getSchema())
                     ? $resourceType->getSchema()
                     : [$resourceType->getSchema()];
@@ -129,7 +130,8 @@ class AzureHelper
             $result = self::roughen($result, $resourceType, $object, $attributes, $excludedAttributes);
 
             if ((count($attributes) === 0 || self::inArrayi('meta', $attributes)) &&
-                (count($excludedAttributes) === 0 || !self::inArrayi('meta', $excludedAttributes))) {
+                (count($excludedAttributes) === 0 || !self::inArrayi('meta', $excludedAttributes))
+            ) {
                 $result['meta'] = [
                     'resourceType' => $resourceType->getSingular(),
                     'created' => $array['created_at'],
@@ -152,7 +154,7 @@ class AzureHelper
         array $excludedAttributes = []
     ) {
         return response(self::objectToSCIMArray($object, $resourceType, $attributes, $excludedAttributes))
-        // Leaving this in causes a loop when getting an object
+            // Leaving this in causes a loop when getting an object
             // ->header('Location', self::objectLocation($object, $resourceType))
             ->setEtag(self::getResourceObjectVersion($object));
     }
@@ -283,6 +285,17 @@ class AzureHelper
         return $result;
     }
 
+    public static function flattenPathValue($path)
+    {
+        $delimiters = ['.', '[type eq "', '"].'];
+        $newPath = str_replace($delimiters, $delimiters[0], $path); // 'foo. bar. baz.'
+
+        $arr = explode($delimiters[0], $newPath);
+        $filteredArr = array_filter($arr);
+
+        return join('.', $filteredArr);
+    }
+
     public static function roughen(
         array $result,
         ResourceType $resourceType,
@@ -295,7 +308,8 @@ class AzureHelper
 
         foreach ($mapping as $key => $value) {
             if ((count($attributes) === 0 || self::inArrayi($key, $attributes)) &&
-                (count($excludedAttributes) === 0 || !self::inArrayi($key, $excludedAttributes))) {
+                (count($excludedAttributes) === 0 || !self::inArrayi($key, $excludedAttributes))
+            ) {
                 if (count($excludes) <> 0) {
                     if (!in_array($key, $excludes)) {
                         $result = self::resultFromKeyValue($result, $key, $value, $object);

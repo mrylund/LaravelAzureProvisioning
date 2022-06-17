@@ -52,9 +52,7 @@ class ResourceType
     public function getMappingForAttribute($attribute)
     {
         $mapping = $this->getMapping();
-        $attribute = strtolower($attribute);
-        Log::debug($attribute . " -> " . is_array($attribute));
-        Log::debug($mapping);
+        $attribute = AzureHelper::flattenPathValue(strtolower($attribute));
 
         if (array_key_exists($attribute, $mapping)) {
             return $mapping[$attribute];
