@@ -201,6 +201,7 @@ class ResourceController extends Controller
         $validations = $resourceType->getValidations();
         $simpleValidations = [];
 
+        Log::debug("Input: ", $objectPreparedForValidation);
         foreach ($input as $key => $value) {
             $_key = str_replace('.', '___', strtolower($resourceType->getAttributefromSCIMAttribute($key)));
             if ($_key === "active") {
@@ -216,8 +217,8 @@ class ResourceController extends Controller
                     : str_replace(',[OBJECT_ID]', '', $value));
         }
 
-        Log::debug($objectPreparedForValidation);
-        Log::debug($simpleValidations);
+        Log::debug("objectPreparedForValidation: ", $objectPreparedForValidation);
+        Log::debug("simpleValidations: ", $simpleValidations);
         $validator = Validator::make($objectPreparedForValidation, $simpleValidations);
         Log::debug($validator);
 
