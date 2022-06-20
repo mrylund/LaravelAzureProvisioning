@@ -14,6 +14,7 @@ use RobTrehy\LaravelAzureProvisioning\Utils\SCIMConstantsV2;
 use Tmilos\ScimFilterParser\Error\FilterException;
 use Tmilos\ScimFilterParser\Parser;
 use Tmilos\ScimFilterParser\Mode;
+use Illuminate\Support\Facades\Log;
 
 class ResourceController extends Controller
 {
@@ -65,9 +66,9 @@ class ResourceController extends Controller
             ));
         }
 
-        if (isset($input[SCIMConstantsV2::MESSAGE_PATCH_OP.':Operations'])) {
-            $input['Operations'] = $input[SCIMConstantsV2::MESSAGE_PATCH_OP.':Operations'];
-            unset($input[SCIMConstantsV2::MESSAGE_PATCH_OP.':Operations']);
+        if (isset($input[SCIMConstantsV2::MESSAGE_PATCH_OP . ':Operations'])) {
+            $input['Operations'] = $input[SCIMConstantsV2::MESSAGE_PATCH_OP . ':Operations'];
+            unset($input[SCIMConstantsV2::MESSAGE_PATCH_OP . ':Operations']);
         }
 
         // $oldObject = $resourceObject;
@@ -108,7 +109,7 @@ class ResourceController extends Controller
         $count = max(0, intVal($request->input('count', 10)));
 
         $sortBy = is_null($request->input('sortby')) ? ''
-                    : $resourceType->getMappingForAttribute($request->input('sortby')) ;
+            : $resourceType->getMappingForAttribute($request->input('sortby'));
 
         $resourceObjectBase = $model::when(
             $filter = $request->input('filter'),
@@ -128,7 +129,7 @@ class ResourceController extends Controller
         );
 
         $resourceObjects = $resourceObjectBase->skip($startIndex - 1)->take($count);
-        $resourceObjects = $resourceObjects->with(config('azureprovisioning.'.$resourceType->getName().'.relations'));
+        $resourceObjects = $resourceObjects->with(config('azureprovisioning.' . $resourceType->getName() . '.relations'));
 
         if ($sortBy != null) {
             $direction = $request->input('sortorder') == 'descending' ? 'desc' : 'asc';
@@ -211,11 +212,14 @@ class ResourceController extends Controller
             $_key = str_replace('.', '___', strtolower($resourceType->getAttributefromSCIMAttribute($key)));
             $simpleValidations[$_key]  = !is_string($value) ? $value
                 : ($resourceObject != null
-                    ? preg_replace('/,\[OBJECT_ID\]/', ','.$resourceObject->id, $value)
+                    ? preg_replace('/,\[OBJECT_ID\]/', ',' . $resourceObject->id, $value)
                     : str_replace(',[OBJECT_ID]', '', $value));
         }
 
+        Log::debug($objectPreparedForValidation);
+        Log::debug($simpleValidations);
         $validator = Validator::make($objectPreparedForValidation, $simpleValidations);
+        Log::debug($validator);
 
         if ($validator->fails()) {
             $e = $validator->errors();
