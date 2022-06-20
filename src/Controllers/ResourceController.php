@@ -233,6 +233,7 @@ class ResourceController extends Controller
         }
 
         $validTemp = $validator->validate();
+        Log::debug("Validate items: ", $validTemp);
         $valid = [];
 
         $keys = collect($simpleValidations)->keys()->map(
@@ -253,6 +254,7 @@ class ResourceController extends Controller
             $result[$key] = $value;
         }
 
+        Log::debug("Result: ", $result);
         return $result;
     }
 }
