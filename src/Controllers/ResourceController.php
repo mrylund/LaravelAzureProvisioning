@@ -220,7 +220,6 @@ class ResourceController extends Controller
         Log::debug("objectPreparedForValidation: ", $objectPreparedForValidation);
         Log::debug("simpleValidations: ", $simpleValidations);
         $validator = Validator::make($objectPreparedForValidation, $simpleValidations);
-        Log::debug($validator);
 
         if ($validator->fails()) {
             $e = $validator->errors();
